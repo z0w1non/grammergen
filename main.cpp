@@ -5,15 +5,11 @@ int main(int argc, const char** argv) {
 
     generic_programming gp;
     gp.read_input("./input.txt");
-    gp.init_grammer(10, 100);
-    gp.print_grammer();
+    gp.init_grammer(100, 100);
+    gp.set_elite_ratio(0.1);
+    gp.set_mutation_ratio(0.1);
+    gp.set_max_unmodified_count(1000);
+    gp.run();
 
-    std::shared_ptr<grammer> ptr =
-        std::make_shared<cat>(
-                std::make_shared<word>("foo"),
-                std::make_shared<word>("bar")
-        );
-    std::cout << ptr->match("foobar") << std::endl;
-    std::cout << *ptr << std::endl;
-    return 0;
+    return EXIT_SUCCESS;
 }

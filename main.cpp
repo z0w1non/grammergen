@@ -6,8 +6,8 @@ int main(int argc, const char** argv) {
     generic_programming gp;
     gp.read_input("./input.txt");
     gp.init_grammer(100, 100);
-    gp.set_elite_ratio(0.1);
-    gp.set_mutation_ratio(0.1);
+    gp.set_elite_ratio(0.05);
+    gp.set_mutation_ratio(0.05);
     gp.set_max_unmodified_count(1000);
     gp.run();
 

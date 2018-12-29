@@ -14,6 +14,7 @@
 #include <cctype>
 #include <type_traits>
 #include <deque>
+#include <regex>
 
 namespace grammergen {
 
@@ -64,8 +65,9 @@ public:
         context ctx;
         auto candicates = parse(str, ctx);
         if (match(candicates))
-            return 1.0;
-        return static_cast<double>(ctx.match_count)/* / ctx.compare_count */;
+            return 1.0 + 1.0 / ctx.compare_count;
+        double evaluation_value = static_cast<double>(ctx.match_count);
+        return evaluation_value;
     }
 
     virtual auto clone() const -> std::shared_ptr<grammer> = 0;
@@ -394,6 +396,28 @@ auto select_individual(std::vector<std::pair<std::shared_ptr<grammer>, double>> 
     return individuals[0].first;
 }
 
+auto trim(std::string_view str) -> std::string_view {
+    if (str.empty())
+        return std::string_view{};
+    auto begin = str.begin();
+    while (begin != str.end() && std::isspace(*begin))
+        ++begin;
+    auto rbegin = str.rbegin();
+    while (rbegin != str.rend() && std::isspace(*rbegin))
+        ++rbegin;
+    return std::string_view(begin, &*rbegin - &*begin + 1);
+}
+
+auto split_line(std::string_view str) -> std::vector<std::string> {
+    std::vector<std::string> results;
+    std::regex reg{"[^\\r\\n]+"};
+    std::cregex_token_iterator begin{str.begin(), str.end(), reg}, end;
+    std::for_each(begin, end, [&](auto & match_result){
+        results.push_back(std::string(trim(match_result.str())));
+    });
+    return results;
+}
+
 class generic_programming {
 public:
     generic_programming() {}
@@ -422,6 +446,11 @@ public:
 
     auto set_max_unmodified_count(std::size_t max_unmodified_count) -> void {
         _max_unmodified_count = max_unmodified_count;
+    }
+
+    auto print_input() const -> void {
+        for (const auto & input : _input_list)
+            std::cout << input << std::endl;
     }
 
     auto run() -> void {
